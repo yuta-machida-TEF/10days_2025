@@ -77,6 +77,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         memcpy(preKeys, keys, 256);
         Novice::GetHitKeyStateAll(keys);
 
+
         ///
         /// ↓ 更新処理 ↓
         ///
