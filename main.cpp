@@ -57,6 +57,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // プレイヤー初期化
 
+
     Player player = { {kWindowWidth / 2.0f, kWindowHeight - 100.0f}, 20.0f, 8 };
     Player player2 = { {kWindowWidth / 2.0f, kWindowHeight - 100.0f}, 20.0f, 8 };
 
