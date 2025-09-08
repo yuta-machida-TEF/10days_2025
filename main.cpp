@@ -115,16 +115,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int powerUpSpawnTimer = 0;      // 連射速度アイテム出現までのタイマー
 	int shotgunPowerUpSpawnTimer = 0; // ショットガンアイテム出現までのタイマー
 	int itemHandle = Novice::LoadTexture("./Resources/item.png");
-
 	//タイトル画面
 	int tilteHandle = Novice::LoadTexture("./Resources/Tilte.png");
-
 	//ステージ
 	int stageHandle = Novice::LoadTexture("./Resources/stage.png");
 	//ゲームクリア
-	
-
+	int clearHandle = Novice::LoadTexture("./Resources/CLEAR.png");
 	//ゲームオーバ
+	int overHandle = Novice::LoadTexture("./Resources/GAMEOVER.png");
+	//ステージ選択
+	int SETUCHandle = Novice::LoadTexture("./Resources/SELECT.png");
+	//説明
+	int Explanation = Novice::LoadTexture("./Resources/Setumei.png");
+
 
 	// プレイヤー移動範囲（左右の壁）
 	int minX = 360;
@@ -198,6 +201,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				scene = GAME3;
 				initGame(); // ゲーム開始時に毎回初期化
 			}
+			//説明に戻る
+			if(preKeys[DIK_BACKSPACE] == 0 && keys[DIK_BACKSPACE] != 0)
+			{
+				scene = EXPLANATION;
+			}
+
 			break;
 
 		case GAME1: {
@@ -444,6 +453,47 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		} break;
 
+		case GAME2:
+		{
+			// プレイヤー操作（AとDキーで左右移動）
+			if (keys[DIK_A]) { player.pos.x -= player.speed; }
+			if (keys[DIK_D]) { player.pos.x += player.speed; }
+
+			// プレイヤーの移動制限（画面外に出ないように）
+			float minPlayerX = minX + player.radius;
+			float maxPlayerX = maxX - player.radius;
+			if (player.pos.x < minPlayerX) player.pos.x = minPlayerX;
+			if (player.pos.x > maxPlayerX) player.pos.x = maxPlayerX;
+
+			// 弾発射（スペースキー）
+			if (keys[DIK_SPACE] && shotCooldown == 0) {
+				if (player.shotgunLevel == 0) {
+					// 通常弾
+					bullets.push_back({ {player.pos.x + 16, player.pos.y}, 16.0f, 15, {0.0f, -1.0f}, true });
+				} else {
+					// ショットガン（複数方向に発射）
+					float angleIncrement = 0.15f;
+					for (int i = -player.shotgunLevel; i <= player.shotgunLevel; ++i) {
+						float angle = angleIncrement * i;
+						bullets.push_back({ {player.pos.x + 16, player.pos.y}, 16.0f, 15, {sinf(angle), -cosf(angle)}, true });
+					}
+				}
+				// クールダウン設定（連射速度に影響）
+				shotCooldown = defaultShotCooldown;
+			}
+			if (shotCooldown > 0) shotCooldown--;
+
+			// 弾の移動処理
+			for (auto& b : bullets) {
+				if (b.isAlive) {
+					b.pos.x += b.direction.x * b.speed;
+					b.pos.y += b.direction.y * b.speed;
+					if (b.pos.y < 0) b.isAlive = false; // 画面外に出たら消える
+				}
+			}
+		}
+		break;
+			
 		case CLEAR: // ゲームクリア
 			if (preKeys[DIK_RETURN] == 0 && keys[DIK_RETURN] != 0) {
 				scene = TITLE;
@@ -468,17 +518,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		switch (scene) {
 		case TITLE:
 			Novice::DrawSprite(0, 0, tilteHandle, 1.0f, 1.0f, 0.0f, WHITE);
-			
 			break;
 		case EXPLANATION:
-
-
+			Novice::DrawSprite(0, 0, Explanation, 1.0f, 1.0f, 0.0f, WHITE);
 			break;
 		case SELECTION:
-			Novice::ScreenPrintf(400, 500, "choose a stage");
-			Novice::ScreenPrintf(400, 520, "press 1 to start ");
-			Novice::ScreenPrintf(400, 540, "press 2 to start ");
-			Novice::ScreenPrintf(400, 560, "press 3 to start");
+			Novice::DrawSprite(0,0,SETUCHandle,1.0f,1.0f,0.0f,WHITE);
+
 			break;
 
 
@@ -529,21 +575,34 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case GAME2://ステージ２
 
+			//ステージ
+			Novice::DrawSprite(0, 0, stageHandle, 1.0f, 1.0f, 0.0f, WHITE);
+
+			//// 防衛ライン
+			//Novice::DrawLine(0, kWindowHeight - 200, kWindowWidth, kWindowHeight - 200, WHITE);
+			// プレイヤー描画
+			Novice::DrawSprite((int)player.pos.x, (int)player.pos.y, playerHandle, 1.0f, 1.0f, 0.0f, WHITE);
+			// 弾描画
+			for (auto& b : bullets) {
+				if (b.isAlive) {
+					Novice::DrawSprite((int)b.pos.x, (int)b.pos.y, mahoudanHandle, 1.0f, 1.0f, 0.0f, WHITE);
+				}
+			}
+
+
 			break;
 		case GAME3://ステージ３
 
 			break;
 
 		case CLEAR:
-			Novice::ScreenPrintf(500, 400, "CLEAR!");
+			Novice::DrawSprite(0, 0, clearHandle, 1.0f, 1.0f, 0.0f, WHITE);
 			Novice::ScreenPrintf(500, 450, "Clear Time: %d:%02d", elapsedMinutes, elapsedSeconds);
-			Novice::ScreenPrintf(500, 500, "Press ENTER to return to title");
 			break;
 
 		case OVER:
-			Novice::ScreenPrintf(500, 400, "GAME OVER");
+			Novice::DrawSprite(0, 0, overHandle, 1.0f, 1.0f, 0.0f, WHITE);
 			Novice::ScreenPrintf(500, 450, "Time: %d:%02d", elapsedMinutes, elapsedSeconds);
-			Novice::ScreenPrintf(500, 500, "Press ENTER to return to title");
 			break;
 		}
 
