@@ -948,13 +948,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite(10, 60, tateHandle, 1.0f, 1.0f, 0.0f, WHITE);
 			
 			// 桁ごとに分解
-			int numbersArray2[2];
-			numbersArray2[0] = seconds / 10; // 十の位
-			numbersArray2[1] = seconds % 10; // 一の位
+			//int numbersArray[2];
+			numbersArray[0] = seconds / 10; // 十の位
+			numbersArray[1] = seconds % 10; // 一の位
 			for (int j = 0; j < 2; j++) {
 				Novice::DrawSprite(
 					graphWidth * j, 0,
-					LIVEs[numbersArray2[j]],
+					LIVEs[numbersArray[j]],
 					0.5f, 0.5f, 0.0f, WHITE
 				);
 			}
