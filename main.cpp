@@ -146,7 +146,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	int LIVEs[10] = {};
-	for (int j = 10; j > 0; j--) {
+	for (int j = 0; j < 10; j++) {
 		char filePath2[64];
 		snprintf(filePath2, sizeof(filePath2), "./Resources/%d.png", j); // 安全な関数
 		LIVEs[j] = Novice::LoadTexture(filePath2);
@@ -941,7 +941,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			//-----------------------------------------------------------------------------
 
-
+			
+			
 
 			//魔法陣の耐久値
 			Novice::DrawSprite(10, 60, tateHandle, 1.0f, 1.0f, 0.0f, WHITE);
