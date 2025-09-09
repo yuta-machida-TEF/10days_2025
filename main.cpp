@@ -1,109 +1,117 @@
 #include <Novice.h>
+#include <cstdio>
 
-const char kWindowTitle[] = "BGM";
+const char kWindowTitle[] = "Clock Timer";
 
-// ゲームのシーンを定義
 enum Scene {
-    SCENE1, // シーン1
-    SCENE2, // シーン2
-    SCENE3, // シーン3
+	TITLE,
+	GAME1,// ゲーム本編（ステージ1）
+	CLEAR,// クリア画面
 };
+int scene = TITLE;
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    // ライブラリ初期化
-    Novice::Initialize(kWindowTitle, 1280, 720);
 
-    // キー入力用
-    char keys[256] = { 0 };     // 今のキー状態
-    char preKeys[256] = { 0 };  // 1フレーム前のキー状態
+	Novice::Initialize(kWindowTitle, 1280, 720);
 
-    // サウンドデータ読み込み
-    int bgmScene1 = Novice::LoadAudio("./Resources/Sounds/title.mp3");   // シーン1用
-    int bgmScene2 = Novice::LoadAudio("./Resources/Sounds/ketei.mp3");  // シーン2用
-    int bgmScene3 = Novice::LoadAudio("./Resources/Sounds/cancel.mp3"); // シーン3用
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
 
-    int playHandle = -1; // 再生中サウンドのハンドル
-    int scene = SCENE1;  // 最初はシーン1から開始
+	// 数字画像をロード
+	int numberGrahs[10] = {};
+	for (int i = 0; i < 10; i++) {
+		char filePath[64];
+		snprintf(filePath, sizeof(filePath), "./Resources/%d.png", i); // 安全な関数
+		numberGrahs[i] = Novice::LoadTexture(filePath);
+	}
+	const int graphWidth = 71;
+	int frame = 0;// フレームカウント
+	int seconds = 0; // 秒数
 
-    // ================= メインループ =================
-    while (Novice::ProcessMessage() == 0) {
-        Novice::BeginFrame();
+	int LIVEs = 20;
+	
 
-        // 入力を更新（前のフレームの状態をコピー → 今の状態を取得）
-        memcpy(preKeys, keys, 256);
-        Novice::GetHitKeyStateAll(keys);
+	while (Novice::ProcessMessage() == 0) {
+		Novice::BeginFrame();
 
-        // ================= 更新処理 =================
-        switch (scene) {
-        case SCENE1:
-            // サウンドが再生されていなければ再生開始
-            if (!Novice::IsPlayingAudio(playHandle)) {
-                playHandle = Novice::PlayAudio(bgmScene1, false, 1.0f);
-            }
-            // Spaceキーでシーン2へ移動
-            if (preKeys[DIK_SPACE] == 0 && keys[DIK_SPACE]) {
-                scene = SCENE2;              // SCENE2に遷移
-                Novice::StopAudio(playHandle); // 再生中の音を止める
-            }
-            break;
+		memcpy(preKeys, keys, 256);
+		Novice::GetHitKeyStateAll(keys);
 
-        case SCENE2:
-            // Enterキーを押したら bgmScene2 を再生
-            if (preKeys[DIK_RETURN] == 0 && keys[DIK_RETURN]) {
-                playHandle = Novice::PlayAudio(bgmScene2, false, 1.0f);
-            }
+		///
+		/// 更新処理
+		///
+		switch (scene)
+		{
+		case TITLE:
+			if (preKeys[DIK_SPACE] == 0 && keys[DIK_SPACE] != 0) {
+				scene = GAME1;
+				frame = 0; // タイマーをリセット
+				seconds = 0;
+			}
+			break;
 
-            // Spaceキーでシーン3へ移動
-            if (preKeys[DIK_SPACE] == 0 && keys[DIK_SPACE]) {
-                scene = SCENE3;              // SCENE3に遷移
-                Novice::StopAudio(playHandle); // 再生中の音を止める
-            }
-            break;
+		case GAME1:
+			frame++;
+			seconds = frame / 60; // ここの値を変更
 
-        case SCENE3:
-            // Enterキーを押したら bgmScene3 を再生
-            if (preKeys[DIK_RETURN] == 0 && keys[DIK_RETURN]) {
-                playHandle = Novice::PlayAudio(bgmScene3, false, 1.0f);
-            }
+			if (seconds >= 60) {
+				scene = CLEAR;
+			}
+			
 
-            // Spaceキーでシーン1へ戻る
-            if (preKeys[DIK_SPACE] == 0 && keys[DIK_SPACE]) {
-                scene = SCENE1;              // SCENE1に遷移
-                Novice::StopAudio(playHandle); // 再生中の音を止める
-            }
-            break;
-        }
+			if(preKeys[DIK_BACKSPACE] == 0 && keys[DIK_BACKSPACE] != 0)
+			{
+				LIVEs -= 1;
+			}
+			break;
 
-        // ================= 描画処理 =================
-        switch (scene) {
-        case SCENE1:
-            // 紫色の背景
-            Novice::DrawBox(0, 0, 1280, 720, 0.0f, 0xffaaaaff, kFillModeSolid);
-            break;
-        case SCENE2:
-            // 緑色の背景
-            Novice::DrawBox(0, 0, 1280, 720, 0.0f, GREEN, kFillModeSolid);
-            Novice::ScreenPrintf(10, 40, "Press ENTER to play bgmScene2");
-            break;
-        case SCENE3:
-            // 青色の背景
-            Novice::DrawBox(0, 0, 1280, 720, 0.0f, BLUE, kFillModeSolid);
-            break;
-        }
+		case CLEAR:
+			if (preKeys[DIK_SPACE] == 0 && keys[DIK_SPACE] != 0) {
+				scene = TITLE;
+			}
+			break;
+		}
 
-        // デバッグ情報を表示
-        Novice::ScreenPrintf(10, 0, "Scene: %d", scene);
-        Novice::ScreenPrintf(10, 20, "SPACE: change scene / ESC: exit");
+		///
+		/// 描画処理
+		///
+		switch (scene)
+		{
+		case TITLE:
+			Novice::ScreenPrintf(50, 50, "TITLE SCREEN");
+			Novice::ScreenPrintf(50, 70, "Press SPACE to start the game.");
+			break;
 
-        Novice::EndFrame();
+		case GAME1: {
+			// 桁ごとに分解
+			int numbersArray[2];
+			numbersArray[0] = seconds / 10; // 十の位
+			numbersArray[1] = seconds % 10; // 一の位
 
-        // ESCキーで終了
-        if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE]) {
-            break;
-        }
-    }
+			for (int i = 0; i < 2; i++) {
+				Novice::DrawSprite(
+					graphWidth * i, 0,
+					numberGrahs[numbersArray[i]],
+					0.5f, 0.5f, 0.0f, WHITE
+				);
+			}
+			Novice::ScreenPrintf(50, 70, "Seconds: %d", LIVEs);
+			Novice::ScreenPrintf(50, 50, "Seconds: %d", seconds);
+			break;
+		}
+		case CLEAR:
+			Novice::ScreenPrintf(500, 350, "GAME CLEAR!");
+			Novice::ScreenPrintf(450, 370, "Press SPACE to return to title.");
+			break;
+		}
 
-    // ライブラリ終了処理
-    Novice::Finalize();
-    return 0;
+		Novice::EndFrame();
+
+		if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
+			break;
+		}
+	}
+
+	Novice::Finalize();
+	return 0;
 }
