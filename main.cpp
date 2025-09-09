@@ -145,8 +145,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		numberGrahs[i] = Novice::LoadTexture(filePath);
 	}
 
-	int LIVEs[20] = {};
-	for (int j = 20; j < 0; j--) {
+	int LIVEs[10] = {};
+	for (int j = 10; j > 0; j--) {
 		char filePath2[64];
 		snprintf(filePath2, sizeof(filePath2), "./Resources/%d.png", j); // 安全な関数
 		LIVEs[j] = Novice::LoadTexture(filePath2);
@@ -953,7 +953,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			for (int j = 0; j < 2; j++) {
 				Novice::DrawSprite(
 					graphWidth * j, 0,
-					numberLives[numbersArray2[j]],
+					LIVEs[numbersArray2[j]],
 					0.5f, 0.5f, 0.0f, WHITE
 				);
 			}
