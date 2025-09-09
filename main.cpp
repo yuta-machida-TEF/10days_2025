@@ -95,6 +95,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					0.5f, 0.5f, 0.0f, WHITE
 				);
 			}
+
+			
 			Novice::ScreenPrintf(50, 70, "Seconds: %d", LIVEs);
 			Novice::ScreenPrintf(50, 50, "Seconds: %d", seconds);
 			break;
