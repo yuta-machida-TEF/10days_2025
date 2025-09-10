@@ -1695,6 +1695,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						);
 
 
+
 					Novice::DrawSprite((int)e.pos.x - 10, (int)e.pos.y - 70, hatoHandle, 0.4f, 0.4f, 0.0f, WHITE);
 				}
 			}
