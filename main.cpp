@@ -157,7 +157,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int seconds = 0; // 秒数
 
 
-
 	//HPマーク
 	int hatoHandle = Novice::LoadTexture("./Resources/ha-to.png");
 	//魔法陣耐久値マーク
@@ -216,6 +215,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		player.shotgunTimer = 0;
 		frame = 0; // タイマーをリセット
 		seconds = 0;
+		
 		};
 	initGame(); // 初回起動時に初期化
 
@@ -299,6 +299,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (seconds >= 60) {
 				scene = CLEAR;
 			}
+
+			
+
 			//---------------------------------------------------
 
 			// ゲーム時間経過
@@ -941,23 +944,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			//-----------------------------------------------------------------------------
 
-			
+			// 桁ごとに分解
+			int numbersArray2[2];
+			numbersArray2[0] = seconds / 10; // 十の位
+			numbersArray2[1] = seconds % 10; // 一の位
+			for (int j = 0; j < 2; j++) {
+				Novice::DrawSprite(
+					graphWidth * j, 0,
+					LIVEs[numbersArray2[j]],
+					0.5f, 0.5f, 0.0f, WHITE
+				);
+			}
 			
 
 			//魔法陣の耐久値
 			Novice::DrawSprite(10, 60, tateHandle, 1.0f, 1.0f, 0.0f, WHITE);
 			
-			// 桁ごとに分解
-			//int numbersArray[2];
-			numbersArray[0] = seconds / 10; // 十の位
-			numbersArray[1] = seconds % 10; // 一の位
-			for (int j = 0; j < 2; j++) {
-				Novice::DrawSprite(
-					graphWidth * j, 0,
-					LIVEs[numbersArray[j]],
-					0.5f, 0.5f, 0.0f, WHITE
-				);
-			}
+			
 
 
 			// プレイヤー描画
