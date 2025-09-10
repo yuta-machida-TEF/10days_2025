@@ -145,6 +145,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		numberGrahs[i] = Novice::LoadTexture(filePath);
 	}
 
+
+	//十の位
+	int LIVEs2[10] = {};
+	for (int j = 0; j < 2; j++) {
+		char filePath2[64];
+		snprintf(filePath2, sizeof(filePath2), "./Resources/%d.png", j); // 安全な関数
+		LIVEs2[j] = Novice::LoadTexture(filePath2);
+	}
+
+	//一の位
 	int LIVEs[10] = {};
 	for (int j = 0; j < 10; j++) {
 		char filePath2[64];
@@ -153,7 +163,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	const int graphWidth = 71;
-	int frame = 0;   // フレームカウント
+
+ 	int frame = 0;   // フレームカウント
 	int seconds = 0; // 秒数
 
 
@@ -944,22 +955,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 			//-----------------------------------------------------------------------------
 
-			// 桁ごとに分解
-			int numbersArray2[2];
-			numbersArray2[0] = seconds / 10; // 十の位
-			numbersArray2[1] = seconds % 10; // 一の位
-			for (int j = 0; j < 2; j++) {
+			//魔法陣の耐久値
+			Novice::DrawSprite(10, 60, tateHandle, 1.0f, 1.0f, 0.0f, WHITE);
+
+
+			int numbersArray3[1];
+			numbersArray3[0] = lives / 10; // 十の位
+			for (int j = 0; j < 1; j++) {
 				Novice::DrawSprite(
-					graphWidth * j, 0,
+					0,60,
+					LIVEs[numbersArray3[j]],
+					0.5f, 0.5f, 0.0f, WHITE
+				);
+			}
+
+			int numbersArray2[1];
+			numbersArray2[0] = lives % 10; // 一の位
+			for (int j = 0; j < 1; j++) {
+				Novice::DrawSprite(
+					30,60,
 					LIVEs[numbersArray2[j]],
 					0.5f, 0.5f, 0.0f, WHITE
 				);
 			}
-			
 
-			//魔法陣の耐久値
-			Novice::DrawSprite(10, 60, tateHandle, 1.0f, 1.0f, 0.0f, WHITE);
-			
+
 			
 
 
@@ -975,7 +995,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			for (auto& e : goburins) {
 				if (e.isAlive) {
 					Novice::DrawSprite((int)e.pos.x, (int)e.pos.y, goburinHandle, 1.0f, 1.0f, 0.0f, WHITE);
-					Novice::ScreenPrintf((int)e.pos.x - 10, (int)e.pos.y - 30, "HP:%d", e.hp);
+					int numbersArray4[1];
+					numbersArray4[0] = e.hp / 10; // 十の位
+					
+					for (int a = 0; a < 1; a++) {
+						Novice::DrawSprite(
+							(int)e.pos.x + 10, (int)e.pos.y - 20,
+							LIVEs[numbersArray4[a]],
+							0.3f, 0.3f, 0.0f, WHITE
+						);
+					}
+
+					int numbersArray5[1];
+					numbersArray5[0] = e.hp % 10; // 一の位
+					for (int k = 0; k < 1; k++) {
+						Novice::DrawSprite(
+							(int)e.pos.x + 30, (int)e.pos.y - 20,
+							LIVEs[numbersArray5[k]],
+							0.3f, 0.3f, 0.0f, WHITE
+						);
+					}
+
+					
 					Novice::DrawSprite((int)e.pos.x - 10, (int)e.pos.y - 30, hatoHandle, 0.4f, 0.4f, 0.0f, WHITE);
 				}
 			}
